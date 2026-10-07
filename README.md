@@ -9,3 +9,4 @@ Discord Bot that pings roles for Events on Aion 2 based on static time without u
 For setup Change Token to own Discord bot token in bot.py.
 Dockerfile and requirements setup for fly hosting.
 
+Bot is set to CEST. To Change it change the Zone info to your timezone
