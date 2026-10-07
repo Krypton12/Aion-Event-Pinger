@@ -1,6 +1,7 @@
 import json
 import os
 import asyncio
+from zoneinfo import ZoneInfo
 import discord
 from discord.ext import tasks, commands
 from datetime import datetime, time, timezone, timedelta
@@ -27,11 +28,11 @@ def update_config(key,val):
     data[key] = val
     with open(CONFIG_PATH, "w") as f:
         json.dump(data,f, indent=2)
-
+BERLIN_TZ = ZoneInfo("Europe/Berlin")
 #shugo und rift und siege timers fue jetzt
-SHUGO_SCHEDULE = [time(hour=h, minute=0, tzinfo=timezone.utc) for h in range(24)] #jede stunde
-RIFT_SCHEDULE = [time(hour=h, minute=0, tzinfo=timezone.utc) for h in [2, 5, 8, 11, 14, 17, 20, 23]] # alle 3 ab 2uhr
-SIEGE_SCHEDULE = [time(hour=21, minute=0, tzinfo=timezone.utc)] # 21 uhr alle paar tage
+SHUGO_SCHEDULE = [time(hour=h, minute=0, tzinfo=BERLIN_TZ) for h in range(24)] #jede stunde
+RIFT_SCHEDULE = [time(hour=h, minute=0, tzinfo=BERLIN_TZ) for h in [2, 5, 8, 11, 14, 17, 20, 23]] # alle 3 ab 2uhr
+SIEGE_SCHEDULE = [time(hour=21, minute=0, tzinfo=BERLIN_TZ)] # 21 uhr alle paar tage
 
 @bot.event
 async def on_ready():
@@ -133,7 +134,7 @@ async def rift_task():
     role_id = cfg.get("rift")
     mention = f"<@&{role_id}> " if role_id else ""
 
-    close_ts = int((datetime.now(timezone.utc) + timedelta(minutes=10)).timestamp())
+    close_ts = int((datetime.now(BERLIN_TZ) + timedelta(minutes=10)).timestamp())
 
     await channel.send(
         f"{mention}**Rift opened!**\n :friendewhut: "
@@ -160,7 +161,7 @@ async def rift_task():
 @tasks.loop(time=SIEGE_SCHEDULE)
 async def siege_task():
     # montag,donnerstag, samstag
-    if datetime.now(timezone.utc).weekday() in (0, 3, 5):
+    if datetime.now(BERLIN_TZ).weekday() in (0, 3, 5):
         await send_event_alert(
             "siege", 
             "**Artifact Siege starting!** :mia_eyes: "
